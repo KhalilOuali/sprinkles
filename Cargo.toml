@@ -1,10 +1,11 @@
 [package]
 name = "sprinkles"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2021"
+authors = ["Khalil Ouali"]
+license = "MIT"
 
 [dependencies]
 clap = { version = "4.3.15", features = ["derive"] }
-colored = "2.0.4"
 rand = "0.8.5"
 termcolor = "1.2.0"
