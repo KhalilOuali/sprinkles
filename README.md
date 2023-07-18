@@ -1,5 +1,7 @@
 # sprinkles: add a dash of color
 
+[![Latest Release](https://img.shields.io/github/v/tag/KhalilOuali/sprinkles?logo=github)](https://github.com/KhalilOuali/sprinkles/releases/tag/1.0.0)
+
 # 🌈 Overview
 
 Randomly colors input text and outputs it to the terminal.
