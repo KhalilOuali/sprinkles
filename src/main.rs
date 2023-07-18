@@ -1,130 +1,53 @@
-use colored::{Color, Colorize};
-use rand::seq::SliceRandom;
 use std::{
-    env::{args, Args},
-    fs, io,
-    process::exit,
+    error::Error,
+    io::{self, Read, Write},
 };
 
-fn print_usage(full: bool) {
-    println!();
-    println!("Usage:");
-    println!("\t- sprinkles");
-    if full {
-        println!("Reads from stdin or pipe. Press Ctrl+D twice to finish typing.");
-    }
-    println!();
-    println!("\t- sprinkles <input>");
-    if full {
-        println!("Reads from argument. Make sure to use quotes if it's multiple words.");
-    }
-    println!();
-    println!("\t- sprinkles -f <filename>");
-    if full {
-        println!("Reads from the file.");
-    }
-    println!();
-    println!("\t- sprinkles --help");
-    if full {
-        println!("Show this help message.");
-    }
+use clap::Parser;
+use sprinkles::sprinklize;
+
+#[derive(Parser)]
+#[command(author, version, about, long_about = None)]
+struct Args {
+    /// Gimme BIG sprinkles
+    #[arg(short = 'g', long, action)]
+    bold: bool,
+
+    /// More on the side
+    #[arg(short, long, action)]
+    italic: bool,
+
+    /// Make em tilt
+    #[arg(short, long, action, conflicts_with = "bright")]
+    normal: bool,
+
+    /// Ooh, shiny
+    #[arg(short, long, action, conflicts_with = "normal")]
+    bright: bool,
+
+    /// I'd like a cup of hot cocoa
+    #[arg(short, long, action, conflicts_with = "cold")]
+    warm: bool,
+
+    /// I need something refreshing
+    #[arg(short, long, action, conflicts_with = "warm")]
+    cold: bool,
 }
 
-fn read_from_stdin() -> String {
-    io::stdin()
-        .lines()
-        .map(|line| line.expect("Unexpected error: Couldn't read stdin."))
-        .collect::<Vec<_>>()
-        .join("\n")
+fn read_text() -> Result<String, io::Error> {
+    let mut buf = String::new();
+    io::stdin().read_to_string(&mut buf)?;
+    Ok(buf)
 }
 
-fn read_from_arg(mut args: Args) -> String {
-    let arg = args
-        .next()
-        .expect("Unexpected error: Couldn't parse argument.");
-    if arg == "--help" {
-        println!(
-            "{} prints out a colored version of the input text or file.",
-            sprinklize("sprinkles")
-        );
-        print_usage(true);
-        exit(0);
-    };
-    arg
-}
+fn main() -> Result<(), Box<dyn Error>> {
+    let args = Args::parse();
+    let text = read_text()?;
 
-fn read_from_file(mut args: Args) -> String {
-    let flag = args
-        .next()
-        .expect("Unexpected error: Couldn't parse arguments.");
-    if flag != "-f" {
-        eprintln!("Invalid arguments.");
-        print_usage(false);
-        exit(1);
-    };
-    let filename = args
-        .next()
-        .expect("Unexpected error: Couldn't parse filename.");
-    match fs::read_to_string(filename) {
-        Ok(content) => content,
-        Err(error) => {
-            eprintln!("Couldn't read file due to the following error:");
-            eprintln!("{error}");
-            exit(2);
-        }
-    }
-}
-
-fn read_string() -> String {
-    let mut args = args();
-    args.next();
-    let len = args.len();
-
-    match len {
-        0 => read_from_stdin(),
-        1 => read_from_arg(args),
-        2 => read_from_file(args),
-        _ => {
-            eprintln!("Invalid number of arguments.");
-            print_usage(false);
-            exit(1);
-        }
-    }
-}
-
-fn sprinklize(string: &str) -> String {
-    let colors = [
-        Color::Red,
-        Color::Green,
-        Color::Yellow,
-        Color::Blue,
-        Color::Magenta,
-        Color::Cyan,
-        Color::White,
-        Color::BrightRed,
-        Color::BrightGreen,
-        Color::BrightYellow,
-        Color::BrightBlue,
-        Color::BrightMagenta,
-        Color::BrightCyan,
-        Color::BrightWhite,
-    ];
-
-    let mut rng = rand::thread_rng();
-    string
-        .chars()
-        .map(|c| {
-            let color = colors
-                .choose(&mut rng)
-                .expect("Unexpected error: Chosen color none.");
-            c.to_string().color(*color).to_string()
-        })
-        .collect()
-}
-
-fn main() {
-    let string = read_string();
-    let sprinkles = sprinklize(&string);
-    println!("{sprinkles}");
-    exit(0);
+    // args indicate "only", that's why we pass them with !
+    let sprinkles = sprinklize(&text, args.bold, args.italic, !args.bright, !args.normal, !args.cold, !args.warm);
+    
+    print!("{sprinkles}");
+    std::io::stdout().flush().unwrap();
+    Ok(())
 }
