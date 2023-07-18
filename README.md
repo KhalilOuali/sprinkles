@@ -1,6 +1,7 @@
 # sprinkles: add a dash of color
 
-[![Latest Release](https://img.shields.io/github/v/tag/KhalilOuali/sprinkles?logo=github)](https://github.com/KhalilOuali/sprinkles/releases/tag/1.0.0)
+[![Latest Release](https://img.shields.io/github/v/tag/KhalilOuali/sprinkles?logo=github)](https://github.com/KhalilOuali/sprinkles/releases/tag/1.0.0) [![Crates.io](https://img.shields.io/crates/v/sprinkles?logo=rust)](https://crates.io/crates/sprinkles)
+
 
 # 🌈 Overview
 

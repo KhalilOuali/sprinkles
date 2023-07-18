@@ -7,7 +7,7 @@ license = "MIT"
 repository = "https://github.com/KhalilOuali/sprinkles"
 description = "Randomly colors input text and outputs it to the terminal."
 keywords = ["cli", "text", "pretty-print", "format"]
-categories = ["Command line utilities"]
+categories = ["command-line-utilities"]
 
 [dependencies]
 clap = { version = "4.3.15", features = ["derive"] }
